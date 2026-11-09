@@ -1,0 +1,18 @@
+Limit  (cost=57.21..57.23 rows=5 width=12) (actual time=0.209..0.211 rows=5 loops=1)
+  Buffers: shared hit=23
+  ->  Sort  (cost=57.21..57.36 rows=59 width=12) (actual time=0.208..0.209 rows=5 loops=1)
+        Sort Key: (count(*)), id_sala
+        Sort Method: top-N heapsort  Memory: 25kB
+        Buffers: shared hit=23
+        ->  HashAggregate  (cost=55.64..56.23 rows=59 width=12) (actual time=0.177..0.183 rows=58 loops=1)
+              Group Key: id_sala
+              Batches: 1  Memory Usage: 24kB
+              Buffers: shared hit=17
+              ->  Seq Scan on transferencia  (cost=0.00..54.50 rows=229 width=4) (actual time=0.008..0.139 rows=229 loops=1)
+                    Filter: (estado <> 'procesado'::estado_documento)
+                    Rows Removed by Filter: 2771
+                    Buffers: shared hit=17
+Planning:
+  Buffers: shared hit=81
+Planning Time: 0.296 ms
+Execution Time: 0.290 ms

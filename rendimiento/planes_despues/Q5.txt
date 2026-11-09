@@ -1,0 +1,15 @@
+Sort  (cost=34.81..34.83 rows=8 width=14) (actual time=0.088..0.088 rows=7 loops=1)
+  Sort Key: fecha DESC
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=13
+  ->  Bitmap Heap Scan on comprobante c  (cost=4.48..34.69 rows=8 width=14) (actual time=0.043..0.069 rows=7 loops=1)
+        Recheck Cond: (id_cliente = 4321)
+        Heap Blocks: exact=7
+        Buffers: shared hit=10
+        ->  Bitmap Index Scan on idx_comprobante_cliente_fecha  (cost=0.00..4.48 rows=8 width=0) (actual time=0.030..0.030 rows=7 loops=1)
+              Index Cond: (id_cliente = 4321)
+              Buffers: shared hit=3
+Planning:
+  Buffers: shared hit=141
+Planning Time: 0.348 ms
+Execution Time: 0.144 ms

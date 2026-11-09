@@ -1,0 +1,24 @@
+Sort  (cost=388.19..388.34 rows=60 width=82) (actual time=2.386..2.390 rows=60 loops=1)
+  Sort Key: (sum(c.total)) DESC
+  Sort Method: quicksort  Memory: 28kB
+  Buffers: shared hit=35
+  ->  HashAggregate  (cost=385.07..386.42 rows=60 width=82) (actual time=2.332..2.349 rows=60 loops=1)
+        Group Key: s.id_sala
+        Batches: 1  Memory Usage: 48kB
+        Buffers: shared hit=32
+        ->  Hash Join  (cost=2.77..354.59 rows=6096 width=24) (actual time=0.060..1.406 rows=6153 loops=1)
+              Hash Cond: (c.id_sala = s.id_sala)
+              Buffers: shared hit=32
+              ->  Index Only Scan using idx_comprobante_fecha_cubriente on comprobante c  (cost=0.42..335.10 rows=6096 width=10) (actual time=0.027..0.594 rows=6153 loops=1)
+                    Index Cond: (fecha >= (CURRENT_DATE - '3 mons'::interval))
+                    Heap Fetches: 0
+                    Buffers: shared hit=31
+              ->  Hash  (cost=1.60..1.60 rows=60 width=18) (actual time=0.024..0.024 rows=60 loops=1)
+                    Buckets: 1024  Batches: 1  Memory Usage: 12kB
+                    Buffers: shared hit=1
+                    ->  Seq Scan on sala_venta s  (cost=0.00..1.60 rows=60 width=18) (actual time=0.005..0.009 rows=60 loops=1)
+                          Buffers: shared hit=1
+Planning:
+  Buffers: shared hit=226
+Planning Time: 0.599 ms
+Execution Time: 2.456 ms

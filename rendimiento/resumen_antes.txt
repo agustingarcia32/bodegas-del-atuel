@@ -1,0 +1,8 @@
+Q1       18.45 ms  buffers=   1303  Parallel Seq Scan comprobante; Seq Scan sala_venta
+Q2        8.61 ms  buffers=   1316  Parallel Seq Scan comprobante; Index Scan cliente
+Q3      107.81 ms  buffers=   4216  Parallel Seq Scan renglon_comprobante; Seq Scan vino
+Q5        6.83 ms  buffers=   1291  Seq Scan comprobante
+Q6        0.24 ms  buffers=     23  Seq Scan transferencia
+Q7        4.83 ms  buffers=    259  Seq Scan cliente
+Q8        0.52 ms  buffers=    100  Seq Scan renglon_transferencia; Index Scan transferencia
+Q4    83235.36 ms  buffers=26619879  Index Only Scan bodega; Seq Scan cliente; Seq Scan vino; Seq Scan comprobante; Index Only Scan renglon_comprobante

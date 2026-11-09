@@ -1,0 +1,248 @@
+######## E1. Orden de columnas del indice compuesto ########
+Consulta: ventas de la sala 7 en los ultimos 90 dias (id_sala con =, fecha con rango)
+--- A) elegido: (id_sala, fecha). En una transaccion se saca el indice cubriente para que no compita
+Aggregate (actual rows=1 loops=1)
+  Buffers: shared hit=111 read=1
+  ->  Bitmap Heap Scan on comprobante (actual rows=109 loops=1)
+        Recheck Cond: ((id_sala = 7) AND (fecha >= (CURRENT_DATE - 90)))
+        Heap Blocks: exact=108
+        Buffers: shared hit=111 read=1
+        ->  Bitmap Index Scan on idx_comprobante_sala_fecha (actual rows=109 loops=1)
+              Index Cond: ((id_sala = 7) AND (fecha >= (CURRENT_DATE - 90)))
+              Buffers: shared hit=3 read=1
+Planning:
+  Buffers: shared hit=134
+Planning Time: 0.401 ms
+Execution Time: 0.543 ms
+--- B) descartado: (fecha, id_sala), mismas columnas en el otro orden
+Aggregate (actual rows=1 loops=1)
+  Buffers: shared hit=108 read=17
+  ->  Bitmap Heap Scan on comprobante (actual rows=109 loops=1)
+        Recheck Cond: ((fecha >= (CURRENT_DATE - 90)) AND (id_sala = 7))
+        Heap Blocks: exact=108
+        Buffers: shared hit=108 read=17
+        ->  Bitmap Index Scan on idx_prueba_fecha_sala (actual rows=109 loops=1)
+              Index Cond: ((fecha >= (CURRENT_DATE - 90)) AND (id_sala = 7))
+              Buffers: shared read=17
+Planning:
+  Buffers: shared hit=15 read=1
+Planning Time: 0.224 ms
+Execution Time: 0.423 ms
+--- C) y una consulta que solo filtra por sala (ventas totales de la sala 7), con (fecha, id_sala): no puede usar el indice
+Aggregate (actual rows=1 loops=1)
+  Buffers: shared hit=1288
+  ->  Seq Scan on comprobante (actual rows=2476 loops=1)
+        Filter: (id_sala = 7)
+        Rows Removed by Filter: 148244
+        Buffers: shared hit=1288
+Planning Time: 0.050 ms
+Execution Time: 6.845 ms
+--- D) la misma consulta con el elegido (id_sala, fecha): usa el prefijo id_sala
+Aggregate (actual rows=1 loops=1)
+  Buffers: shared hit=1093 read=5
+  ->  Bitmap Heap Scan on comprobante (actual rows=2476 loops=1)
+        Recheck Cond: (id_sala = 7)
+        Heap Blocks: exact=1089
+        Buffers: shared hit=1093 read=5
+        ->  Bitmap Index Scan on idx_comprobante_sala_fecha (actual rows=2476 loops=1)
+              Index Cond: (id_sala = 7)
+              Buffers: shared hit=4 read=5
+Planning:
+  Buffers: shared hit=29
+Planning Time: 0.116 ms
+Execution Time: 1.377 ms
+
+######## E2. BRIN sobre comprobante(fecha): evaluado y descartado ########
+correlacion fisica de comprobante.fecha = -0.007  (BRIN necesita valores cercanos a 1 o -1)
+correlacion fisica de comprobante.nro_comprobante = 1.000
+tamano del BRIN: 24 kB (el btree cubriente ocupa 4640 kB)
+--- S8 con el BRIN como unico indice de fecha
+Finalize GroupAggregate (actual rows=60 loops=1)
+  Group Key: id_sala
+  Buffers: shared hit=1295
+  ->  Gather Merge (actual rows=120 loops=1)
+        Workers Planned: 1
+        Workers Launched: 1
+        Buffers: shared hit=1295
+        ->  Sort (actual rows=60 loops=2)
+              Sort Key: id_sala
+              Sort Method: quicksort  Memory: 30kB
+              Buffers: shared hit=1295
+              Worker 0:  Sort Method: quicksort  Memory: 30kB
+              ->  Partial HashAggregate (actual rows=60 loops=2)
+                    Group Key: id_sala
+                    Batches: 1  Memory Usage: 48kB
+                    Buffers: shared hit=1288
+                    Worker 0:  Batches: 1  Memory Usage: 48kB
+                    ->  Parallel Seq Scan on comprobante (actual rows=3076 loops=2)
+                          Filter: (fecha >= (CURRENT_DATE - '3 mons'::interval))
+                          Rows Removed by Filter: 72284
+                          Buffers: shared hit=1288
+Planning:
+  Buffers: shared hit=25
+Planning Time: 0.131 ms
+Execution Time: 12.609 ms
+
+######## E3. Indice sobre renglon_transferencia(cod_vino) para S4: evaluado y descartado ########
+--- sin el indice
+GroupAggregate (actual rows=0 loops=1)
+  Group Key: t.id_sala
+  Buffers: shared hit=94
+  ->  Sort (actual rows=0 loops=1)
+        Sort Key: t.id_sala
+        Sort Method: quicksort  Memory: 25kB
+        Buffers: shared hit=94
+        ->  Nested Loop (actual rows=0 loops=1)
+              Buffers: shared hit=94
+              ->  Seq Scan on renglon_transferencia rt (actual rows=15 loops=1)
+                    Filter: (cod_vino = 123)
+                    Rows Removed by Filter: 9022
+                    Buffers: shared hit=49
+              ->  Index Scan using transferencia_pkey on transferencia t (actual rows=0 loops=15)
+                    Index Cond: (nro_solicitud = rt.nro_solicitud)
+                    Filter: (fecha_confeccion >= (CURRENT_DATE - 15))
+                    Rows Removed by Filter: 1
+                    Buffers: shared hit=45
+Planning:
+  Buffers: shared hit=103
+Planning Time: 0.636 ms
+Execution Time: 0.742 ms
+--- con el indice
+GroupAggregate (actual rows=0 loops=1)
+  Group Key: t.id_sala
+  Buffers: shared hit=58 read=2
+  ->  Sort (actual rows=0 loops=1)
+        Sort Key: t.id_sala
+        Sort Method: quicksort  Memory: 25kB
+        Buffers: shared hit=58 read=2
+        ->  Nested Loop (actual rows=0 loops=1)
+              Buffers: shared hit=58 read=2
+              ->  Bitmap Heap Scan on renglon_transferencia rt (actual rows=15 loops=1)
+                    Recheck Cond: (cod_vino = 123)
+                    Heap Blocks: exact=13
+                    Buffers: shared hit=13 read=2
+                    ->  Bitmap Index Scan on idx_prueba_rt_vino (actual rows=15 loops=1)
+                          Index Cond: (cod_vino = 123)
+                          Buffers: shared read=2
+              ->  Index Scan using transferencia_pkey on transferencia t (actual rows=0 loops=15)
+                    Index Cond: (nro_solicitud = rt.nro_solicitud)
+                    Filter: (fecha_confeccion >= (CURRENT_DATE - 15))
+                    Rows Removed by Filter: 1
+                    Buffers: shared hit=45
+Planning:
+  Buffers: shared hit=29 read=1
+Planning Time: 0.197 ms
+Execution Time: 0.071 ms
+
+######## E4. Indice existente que el planificador NO usa: cliente(tipo_cliente), baja selectividad ########
+socio: 17032 filas (85.2 %)
+distribuidor: 1986 filas (9.9 %)
+exportador: 982 filas (4.9 %)
+--- tipo = socio (85 % de la tabla): el indice existe pero conviene Seq Scan
+Seq Scan on cliente (actual rows=17032 loops=1)
+  Filter: ((tipo_cliente)::text = 'socio'::text)
+  Rows Removed by Filter: 2968
+  Buffers: shared hit=256
+Planning:
+  Buffers: shared hit=14 read=1
+Planning Time: 0.107 ms
+Execution Time: 1.594 ms
+--- forzando el indice (enable_seqscan = off y enable_bitmapscan = off, solo para esta prueba)
+Index Scan using idx_prueba_tipo on cliente (actual rows=17032 loops=1)
+  Index Cond: ((tipo_cliente)::text = 'socio'::text)
+  Buffers: shared hit=247 read=16
+Planning Time: 0.041 ms
+Execution Time: 1.587 ms
+--- tipo = exportador (5 %): ahora si lo usa
+Bitmap Heap Scan on cliente (actual rows=982 loops=1)
+  Recheck Cond: ((tipo_cliente)::text = 'exportador'::text)
+  Heap Blocks: exact=241
+  Buffers: shared hit=243 read=1
+  ->  Bitmap Index Scan on idx_prueba_tipo (actual rows=982 loops=1)
+        Index Cond: ((tipo_cliente)::text = 'exportador'::text)
+        Buffers: shared hit=2 read=1
+Planning Time: 0.036 ms
+Execution Time: 0.263 ms
+
+######## E5. Indice de 008 que el planificador no usa en S1 (lee toda la tabla) ########
+--- plan normal (S1 completa)
+Limit (actual rows=10 loops=1)
+  Buffers: shared hit=693 read=3520
+  ->  Sort (actual rows=10 loops=1)
+        Sort Key: (sum(r.cantidad)) DESC
+        Sort Method: top-N heapsort  Memory: 26kB
+        Buffers: shared hit=693 read=3520
+        ->  Finalize GroupAggregate (actual rows=792 loops=1)
+              Group Key: v.cod_vino
+              Buffers: shared hit=693 read=3520
+              ->  Gather Merge (actual rows=2376 loops=1)
+                    Workers Planned: 2
+                    Workers Launched: 2
+                    Buffers: shared hit=693 read=3520
+                    ->  Sort (actual rows=792 loops=3)
+                          Sort Key: v.cod_vino
+                          Sort Method: quicksort  Memory: 80kB
+                          Buffers: shared hit=693 read=3520
+                          Worker 0:  Sort Method: quicksort  Memory: 80kB
+                          Worker 1:  Sort Method: quicksort  Memory: 80kB
+                          ->  Partial HashAggregate (actual rows=792 loops=3)
+                                Group Key: v.cod_vino
+                                Batches: 1  Memory Usage: 169kB
+                                Buffers: shared hit=679 read=3520
+                                Worker 0:  Batches: 1  Memory Usage: 169kB
+                                Worker 1:  Batches: 1  Memory Usage: 169kB
+                                ->  Hash Join (actual rows=187432 loops=3)
+                                      Hash Cond: (r.cod_vino = v.cod_vino)
+                                      Buffers: shared hit=679 read=3520
+                                      ->  Parallel Seq Scan on renglon_comprobante r (actual rows=187432 loops=3)
+                                            Buffers: shared hit=640 read=3520
+                                      ->  Hash (actual rows=800 loops=3)
+                                            Buckets: 1024  Batches: 1  Memory Usage: 61kB
+                                            Buffers: shared hit=33
+                                            ->  Seq Scan on vino v (actual rows=800 loops=3)
+                                                  Buffers: shared hit=33
+Planning:
+  Buffers: shared hit=119
+Planning Time: 0.375 ms
+Execution Time: 75.761 ms
+--- forzando el uso de idx_renglon_comprobante_vino (enable_seqscan = off)
+Limit (actual rows=10 loops=1)
+  Buffers: shared hit=73 read=1536
+  ->  Sort (actual rows=10 loops=1)
+        Sort Key: (sum(r.cantidad)) DESC
+        Sort Method: top-N heapsort  Memory: 26kB
+        Buffers: shared hit=73 read=1536
+        ->  Finalize GroupAggregate (actual rows=792 loops=1)
+              Group Key: v.cod_vino
+              Buffers: shared hit=73 read=1536
+              ->  Gather Merge (actual rows=1525 loops=1)
+                    Workers Planned: 2
+                    Workers Launched: 2
+                    Buffers: shared hit=73 read=1536
+                    ->  Sort (actual rows=508 loops=3)
+                          Sort Key: v.cod_vino
+                          Sort Method: quicksort  Memory: 79kB
+                          Buffers: shared hit=73 read=1536
+                          Worker 0:  Sort Method: quicksort  Memory: 50kB
+                          Worker 1:  Sort Method: quicksort  Memory: 52kB
+                          ->  Partial HashAggregate (actual rows=508 loops=3)
+                                Group Key: v.cod_vino
+                                Batches: 1  Memory Usage: 169kB
+                                Buffers: shared hit=59 read=1536
+                                Worker 0:  Batches: 1  Memory Usage: 105kB
+                                Worker 1:  Batches: 1  Memory Usage: 105kB
+                                ->  Hash Join (actual rows=187432 loops=3)
+                                      Hash Cond: (r.cod_vino = v.cod_vino)
+                                      Buffers: shared hit=59 read=1536
+                                      ->  Parallel Index Only Scan using idx_renglon_comprobante_vino on renglon_comprobante r (actual rows=187432 loops=3)
+                                            Heap Fetches: 0
+                                            Buffers: shared hit=7 read=1535
+                                      ->  Hash (actual rows=800 loops=3)
+                                            Buckets: 1024  Batches: 1  Memory Usage: 61kB
+                                            Buffers: shared hit=46 read=1
+                                            ->  Index Scan using vino_pkey on vino v (actual rows=800 loops=3)
+                                                  Buffers: shared hit=46 read=1
+Planning:
+  Buffers: shared hit=21
+Planning Time: 0.234 ms
+Execution Time: 65.302 ms

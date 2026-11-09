@@ -1,0 +1,9 @@
+nombre,temperatura_servicio
+Carnes rojas,17
+Quesos duros,16
+Pastas con salsa roja,16
+Carnes blancas,12
+Quesos blandos,10
+Pescados y mariscos,8
+Entradas y fiambres,10
+Postres,8

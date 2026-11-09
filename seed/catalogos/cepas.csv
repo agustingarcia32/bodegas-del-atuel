@@ -1,0 +1,13 @@
+nombre,tipo
+Malbec,tinta
+Cabernet Sauvignon,tinta
+Merlot,tinta
+Syrah,tinta
+Bonarda,tinta
+Tempranillo,tinta
+Pinot Noir,tinta
+Chardonnay,blanca
+Sauvignon Blanc,blanca
+Torrontés,blanca
+Chenin Blanc,blanca
+Semillón,blanca

@@ -1,0 +1,12 @@
+Sort  (cost=3172.12..3172.14 rows=8 width=14) (actual time=5.513..5.515 rows=7 loops=1)
+  Sort Key: fecha DESC
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=1291
+  ->  Seq Scan on comprobante c  (cost=0.00..3172.00 rows=8 width=14) (actual time=1.315..5.483 rows=7 loops=1)
+        Filter: (id_cliente = 4321)
+        Rows Removed by Filter: 150713
+        Buffers: shared hit=1288
+Planning:
+  Buffers: shared hit=83
+Planning Time: 0.224 ms
+Execution Time: 5.550 ms

@@ -1,0 +1,105 @@
+driver: psql (\copy)
+triggers de usuario deshabilitados
+  localidad                    0.04 s
+  cepa                         0.03 s
+  maridaje                     0.03 s
+  bodega                       0.03 s
+  transportista                0.03 s
+  sala_venta                   0.03 s
+  finca                        0.03 s
+  transportista_localidad      0.03 s
+  empleado                     0.03 s
+  parcela                      0.04 s
+  vino                         0.03 s
+  cliente                      0.18 s
+  lote                         0.07 s
+  composicion                  0.04 s
+  vino_maridaje                0.05 s
+  socio                        0.11 s
+  distribuidor                 0.04 s
+  exportador                   0.04 s
+  analisis_calidad             0.10 s
+  permiso_exportacion          0.05 s
+  ingreso                      0.06 s
+  transferencia                0.04 s
+  comprobante                  1.64 s
+  renglon_ingreso              0.11 s
+  renglon_transferencia        0.09 s
+  renglon_comprobante          4.93 s
+  stock_deposito               0.05 s
+  stock_sala                   0.08 s
+  auditoria_precio             0.04 s
+triggers de usuario vueltos a habilitar
+carga total: 10.4 s
+
+=== 1) conteo por tabla ===
+          tabla          | filas  
+-------------------------+--------
+ renglon_comprobante     | 562295
+ comprobante             | 150720
+ cliente                 |  20000
+ socio                   |  17032
+ analisis_calidad        |  10490
+ renglon_transferencia   |   9037
+ renglon_ingreso         |   8844
+ stock_sala              |   4252
+ ingreso                 |   3000
+ lote                    |   3000
+ transferencia           |   3000
+ permiso_exportacion     |   2768
+ distribuidor            |   1986
+ vino_maridaje           |   1656
+ composicion             |   1322
+ exportador              |    982
+ auditoria_precio        |    894
+ stock_deposito          |    800
+ vino                    |    800
+ parcela                 |    600
+ empleado                |    150
+ transportista_localidad |    118
+ finca                   |     80
+ sala_venta              |     60
+ bodega                  |     40
+ localidad               |     28
+ transportista           |     25
+ cepa                    |     12
+ maridaje                |      8
+(29 rows)
+
+=== 2) controles (problemas = 0 en todos) ===
+                              control                               | problemas | resultado 
+--------------------------------------------------------------------+-----------+-----------
+ analisis posteriores a la cosecha del lote                         |         0 | OK
+ auditoria: ultimo precio nuevo distinto del precio actual del vino |         0 | OK
+ clientes con descuento distinto al de su tipo (10/20/30)           |         0 | OK
+ clientes sin su fila de subtipo o con subtipo equivocado           |         0 | OK
+ comprobantes cuyo total no coincide con la suma de sus renglones   |         0 | OK
+ documentos no procesados con fecha vieja (deberian ser recientes)  |         0 | OK
+ huerfanos: comprobante sin cliente o sin sala                      |         0 | OK
+ huerfanos: lote sin parcela                                        |         0 | OK
+ huerfanos: renglon_comprobante sin comprobante                     |         0 | OK
+ huerfanos: renglon_comprobante sin vino                            |         0 | OK
+ huerfanos: renglones de ingreso / transferencia sin cabecera       |         0 | OK
+ ingresos con vino de anada posterior a la fecha                    |         0 | OK
+ ingresos con vinos de otra bodega                                  |         0 | OK
+ renglones con descuento distinto al del cliente                    |         0 | OK
+ renglones cuyo subtotal no es fn_subtotal_renglon(...)             |         0 | OK
+ stock negativo (sala o deposito)                                   |         0 | OK
+ ventas anteriores al alta del cliente                              |         0 | OK
+ ventas anteriores al primer ingreso procesado                      |         0 | OK
+ vinos cuyo corte no suma 100 (RN-05)                               |         0 | OK
+ vinos sin composicion                                              |         0 | OK
+(20 rows)
+
+=== 3) los tres estados existen en ingreso y transferencia ===
+      doc      |    estado     | count 
+---------------+---------------+-------
+ ingreso       | en_confeccion |    90
+ ingreso       | terminado     |   144
+ ingreso       | procesado     |  2766
+ transferencia | en_confeccion |    88
+ transferencia | terminado     |   141
+ transferencia | procesado     |  2771
+(6 rows)
+
+

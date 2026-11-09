@@ -1,0 +1,5 @@
+driver: psql | filas: 20000
+1) fila por fila, un COMMIT por fila (autocommit)             3.96 s        5055 filas/s     1.0x
+2) fila por fila, una sola transaccion                        1.04 s       19197 filas/s     3.8x
+3) por lotes: INSERT/executemany de 1000 filas                0.10 s      192857 filas/s    38.2x
+4) COPY                                                       0.05 s      409566 filas/s    81.0x

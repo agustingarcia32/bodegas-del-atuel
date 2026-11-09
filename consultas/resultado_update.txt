@@ -1,0 +1,90 @@
+Output format is aligned.
+=== U1 ===
+BEGIN
+UPDATE 1000
+CREATE VIEW
+ comprobantes_mal_antes 
+------------------------
+                   1000
+(1 row)
+
+UPDATE 1000
+ comprobantes_mal_despues 
+--------------------------
+                        0
+(1 row)
+
+ROLLBACK
+=== U2 ===
+BEGIN
+ con_mas_de_5_anios | masa_salarial_antes 
+--------------------+---------------------
+                 92 |        130760000.00
+(1 row)
+
+UPDATE 92
+ masa_salarial_despues 
+-----------------------
+          146939000.00
+(1 row)
+
+ROLLBACK
+=== U3 ===
+BEGIN
+ vinos_de_la_bodega | precio_promedio_antes | filas_auditoria_antes 
+--------------------+-----------------------+-----------------------
+                 19 |              29681.58 |                   894
+(1 row)
+
+UPDATE 19
+ precio_promedio_despues | filas_auditoria_despues 
+-------------------------+-------------------------
+                33540.18 |                     913
+(1 row)
+
+ROLLBACK
+=== U4 ===
+BEGIN
+ dia_cierre | count 
+------------+-------
+ lunes      |     8
+ miercoles  |     6
+(2 rows)
+
+UPDATE 14
+ dia_cierre | count 
+------------+-------
+ lunes      |     6
+ miercoles  |     8
+(2 rows)
+
+ROLLBACK
+=== U5 ===
+BEGIN
+ promedio_antes | auditoria_antes 
+----------------+-----------------
+       27244.56 |             894
+(1 row)
+
+UPDATE 10
+ promedio_despues | auditoria_despues 
+------------------+-------------------
+         27184.80 |               904
+(1 row)
+
+ROLLBACK
+=== U6 ===
+BEGIN
+ descuento | count 
+-----------+-------
+     30.00 |   982
+(1 row)
+
+UPDATE 258
+ descuento | count 
+-----------+-------
+     30.00 |   724
+     35.00 |   258
+(2 rows)
+
+ROLLBACK

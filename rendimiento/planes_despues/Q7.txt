@@ -1,0 +1,17 @@
+Limit  (cost=173.45..173.50 rows=20 width=19) (actual time=0.964..0.968 rows=20 loops=1)
+  Buffers: shared hit=83
+  ->  Sort  (cost=173.45..173.65 rows=78 width=19) (actual time=0.962..0.963 rows=20 loops=1)
+        Sort Key: nombre_razon_social
+        Sort Method: top-N heapsort  Memory: 27kB
+        Buffers: shared hit=83
+        ->  Bitmap Heap Scan on cliente  (cost=5.07..171.38 rows=78 width=19) (actual time=0.058..0.830 rows=95 loops=1)
+              Filter: (lower((nombre_razon_social)::text) ~~ 'garc%'::text)
+              Heap Blocks: exact=78
+              Buffers: shared hit=80
+              ->  Bitmap Index Scan on idx_cliente_nombre_lower  (cost=0.00..5.05 rows=76 width=0) (actual time=0.016..0.016 rows=95 loops=1)
+                    Index Cond: ((lower((nombre_razon_social)::text) ~>=~ 'garc'::text) AND (lower((nombre_razon_social)::text) ~<~ 'gard'::text))
+                    Buffers: shared hit=2
+Planning:
+  Buffers: shared hit=195
+Planning Time: 0.967 ms
+Execution Time: 1.010 ms

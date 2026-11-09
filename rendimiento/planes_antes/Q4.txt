@@ -1,0 +1,37 @@
+Nested Loop Anti Join  (cost=1.22..703490572.87 rows=10000 width=4) (actual time=83222.521..83222.524 rows=0 loops=1)
+  Join Filter: (NOT (SubPlan 2))
+  Rows Removed by Join Filter: 652
+  Buffers: shared hit=26618339 read=1540
+  InitPlan 1 (returns $0)
+    ->  Limit  (cost=1.00..1.22 rows=1 width=12) (actual time=0.086..0.087 rows=1 loops=1)
+          Buffers: shared hit=1 read=1
+          ->  Index Only Scan using bodega_pkey on bodega  (cost=0.14..8.74 rows=40 width=12) (actual time=0.073..0.075 rows=5 loops=1)
+                Heap Fetches: 0
+                Buffers: shared hit=1 read=1
+  ->  Seq Scan on cliente k  (cost=0.00..456.00 rows=20000 width=4) (actual time=0.012..12.911 rows=20000 loops=1)
+        Buffers: shared hit=256
+  ->  Materialize  (cost=0.00..21.10 rows=20 width=4) (actual time=0.006..0.006 rows=1 loops=20000)
+        Buffers: shared hit=4 read=1
+        ->  Seq Scan on vino v  (cost=0.00..21.00 rows=20 width=4) (actual time=103.507..103.614 rows=3 loops=1)
+              Filter: ((cuit_bodega)::bpchar = ($0)::bpchar)
+              Rows Removed by Filter: 223
+              Buffers: shared hit=4 read=1
+  SubPlan 2
+    ->  Nested Loop  (cost=0.42..3211.57 rows=1 width=0) (actual time=4.020..4.020 rows=0 loops=20652)
+          Buffers: shared hit=26618079 read=1539
+          ->  Seq Scan on comprobante c  (cost=0.00..3172.00 rows=8 width=4) (actual time=0.595..3.972 rows=7 loops=20652)
+                Filter: (id_cliente = k.id_cliente)
+                Rows Removed by Filter: 148267
+                Buffers: shared hit=26158358
+          ->  Index Only Scan using renglon_comprobante_pkey on renglon_comprobante r  (cost=0.42..4.94 rows=1 width=4) (actual time=0.005..0.005 rows=0 loops=153753)
+                Index Cond: ((nro_comprobante = c.nro_comprobante) AND (cod_vino = v.cod_vino))
+                Heap Fetches: 0
+                Buffers: shared hit=459721 read=1539
+Planning:
+  Buffers: shared hit=339 read=10
+Planning Time: 0.819 ms
+JIT:
+  Functions: 21
+  Options: Inlining true, Optimization true, Expressions true, Deforming true
+  Timing: Generation 0.451 ms, Inlining 45.277 ms, Optimization 34.200 ms, Emission 23.945 ms, Total 103.873 ms
+Execution Time: 83235.357 ms

@@ -1,0 +1,86 @@
+Output format is aligned.
+=== D1 ===
+BEGIN
+ comprobantes_antes | renglones_antes 
+--------------------+-----------------
+             150720 |          562295
+(1 row)
+
+DELETE 11055
+ comprobantes_despues | renglones_despues 
+----------------------+-------------------
+               139665 |            520872
+(1 row)
+
+ROLLBACK
+=== D2 ===
+BEGIN
+INSERT 0 1
+ cepas_antes 
+-------------
+          13
+(1 row)
+
+DELETE 1
+ cepas_despues 
+---------------
+            12
+(1 row)
+
+ROLLBACK
+=== D3 ===
+BEGIN
+ empleados_de_la_localidad | con_menos_de_2_anios 
+---------------------------+----------------------
+                         6 |                    2
+(1 row)
+
+DELETE 2
+ empleados_de_la_localidad_despues 
+-----------------------------------
+                                 4
+(1 row)
+
+ROLLBACK
+=== D4 ===
+BEGIN
+ clientes_antes | socios_antes 
+----------------+--------------
+          20000 |        17032
+(1 row)
+
+DELETE 192
+ clientes_despues | socios_despues 
+------------------+----------------
+            19808 |          16840
+(1 row)
+
+ROLLBACK
+=== D5 ===
+BEGIN
+ ingresos_antes | renglones_antes | deposito_antes 
+----------------+-----------------+----------------
+           3000 |            8844 |        2030346
+(1 row)
+
+DELETE 2327
+ ingresos_despues | renglones_despues | deposito_despues 
+------------------+-------------------+------------------
+              673 |              2013 |          2030346
+(1 row)
+
+ROLLBACK
+=== D6 ===
+BEGIN
+ socios_sin_compras_en_la_localidad 
+------------------------------------
+                                 18
+(1 row)
+
+DELETE 18
+ socios_de_la_localidad_despues 
+--------------------------------
+                            612
+(1 row)
+
+ROLLBACK

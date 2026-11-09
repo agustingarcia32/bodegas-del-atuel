@@ -1,0 +1,24 @@
+GroupAggregate  (cost=4095.20..4095.28 rows=3 width=14) (actual time=6.258..8.768 rows=1 loops=1)
+  Group Key: k.tipo_cliente
+  Buffers: shared hit=1316
+  ->  Sort  (cost=4095.20..4095.21 rows=7 width=10) (actual time=6.248..8.759 rows=7 loops=1)
+        Sort Key: k.tipo_cliente, c.id_cliente
+        Sort Method: quicksort  Memory: 25kB
+        Buffers: shared hit=1316
+        ->  Gather  (cost=1000.29..4095.10 rows=7 width=10) (actual time=1.146..8.727 rows=7 loops=1)
+              Workers Planned: 1
+              Workers Launched: 1
+              Buffers: shared hit=1310
+              ->  Nested Loop  (cost=0.29..3094.40 rows=4 width=10) (actual time=0.950..4.164 rows=4 loops=2)
+                    Buffers: shared hit=1310
+                    ->  Parallel Seq Scan on comprobante c  (cost=0.00..3061.18 rows=4 width=4) (actual time=0.923..4.109 rows=4 loops=2)
+                          Filter: ((id_sala = 7) AND (fecha >= (CURRENT_DATE - 7)))
+                          Rows Removed by Filter: 75356
+                          Buffers: shared hit=1288
+                    ->  Index Scan using cliente_pkey on cliente k  (cost=0.29..8.30 rows=1 width=10) (actual time=0.012..0.012 rows=1 loops=7)
+                          Index Cond: (id_cliente = c.id_cliente)
+                          Buffers: shared hit=22
+Planning:
+  Buffers: shared hit=160
+Planning Time: 0.493 ms
+Execution Time: 8.834 ms

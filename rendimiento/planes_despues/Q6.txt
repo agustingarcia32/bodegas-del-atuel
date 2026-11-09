@@ -1,0 +1,16 @@
+Limit  (cost=14.29..14.31 rows=5 width=12) (actual time=0.078..0.079 rows=5 loops=1)
+  Buffers: shared hit=8
+  ->  Sort  (cost=14.29..14.44 rows=59 width=12) (actual time=0.076..0.076 rows=5 loops=1)
+        Sort Key: (count(*)), id_sala
+        Sort Method: top-N heapsort  Memory: 25kB
+        Buffers: shared hit=8
+        ->  GroupAggregate  (cost=0.14..13.31 rows=59 width=12) (actual time=0.023..0.053 rows=58 loops=1)
+              Group Key: id_sala
+              Buffers: shared hit=2
+              ->  Index Only Scan using idx_transferencia_pendientes on transferencia  (cost=0.14..11.58 rows=229 width=4) (actual time=0.017..0.028 rows=229 loops=1)
+                    Heap Fetches: 0
+                    Buffers: shared hit=2
+Planning:
+  Buffers: shared hit=93
+Planning Time: 0.351 ms
+Execution Time: 0.118 ms

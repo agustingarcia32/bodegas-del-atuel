@@ -1,0 +1,377 @@
+Output format is aligned.
+=== S1 ===
+ cod_vino |                    nombre                    | botellas 
+----------+----------------------------------------------+----------
+       98 | Reserva Pinot Noir del Pedemonte             |     5445
+      731 | Estirpe Chardonnay de los Andes              |     5262
+      684 | Gran Reserva Cabernet Sauvignon de los Andes |     4904
+      723 | Finca Chenin Blanc del Cañón                 |     4876
+       61 | Altura Merlot de la Ribera                   |     4380
+      609 | Edición Limitada Chenin Blanc del Pedemonte  |     4282
+      666 | Línea Clásica Merlot de Cuyo                 |     4139
+       79 | Estirpe Torrontés de Altura                  |     4072
+      608 | Terruño Bonarda del Diamante                 |     4007
+       34 | Cumbre Chenin Blanc del Cañón                |     3990
+(10 rows)
+
+=== S2 ===
+ cod_vino |                  nombre                  
+----------+------------------------------------------
+       28 | Tradición Torrontés de la Ribera
+       82 | Origen Merlot del Atuel
+      120 | Terruño Semillón del Pedemonte
+      165 | Altura Bonarda del Pedemonte
+      285 | Línea Clásica Semillón de Cuyo
+      401 | Gran Reserva Syrah de Altura
+      455 | Estirpe Pinot Noir del Atuel
+      473 | Parcela Cabernet Sauvignon del Pedemonte
+      483 | Edición Limitada Tempranillo de Cuyo
+      489 | Línea Clásica Chenin Blanc del Valle
+      652 | Altura Pinot Noir de los Andes
+      785 | Horizonte Cabernet Sauvignon del Sur
+(12 rows)
+
+=== S3 ===
+ tipo_cliente | clientes 
+--------------+----------
+ socio        |        7
+(1 row)
+
+=== S4 ===
+ id_sala | cantidad_solicitada 
+---------+---------------------
+       2 |                  80
+      34 |                  21
+(2 rows)
+
+=== S5 ===
+ id_sala | pendientes 
+---------+------------
+       9 |          0
+      56 |          0
+(2 rows)
+
+=== S6 ===
+ cod_vino |                 nombre                 | stock_deposito 
+----------+----------------------------------------+----------------
+       63 | Gran Reserva Chenin Blanc del Atuel    |           7316
+      173 | Cumbre Syrah de Altura                 |           6779
+      584 | Altura Chardonnay de la Cordillera     |           6592
+      715 | Selección Semillón del Médano          |           6509
+      103 | Cosecha Chenin Blanc de Cuyo           |           6258
+      547 | Roble Semillón de los Andes            |           5922
+      442 | Edición Limitada Merlot del Valle      |           5902
+      184 | Selección Cabernet Sauvignon del Cañón |           5899
+       85 | Origen Malbec de la Ribera             |           5788
+      778 | Cumbre Cabernet Sauvignon de Cuyo      |           5568
+      531 | Oasis Syrah del Atuel                  |           5353
+        4 | Tradición Semillón del Atuel           |           5308
+      170 | Reserva Chardonnay de Altura           |           5215
+       40 | Gran Reserva Tempranillo del Diamante  |           5204
+      289 | Horizonte Pinot Noir de Altura         |           5178
+(15 rows)
+
+=== S7 ===
+ cod_transporte |     razon_social      | ingresos 
+----------------+-----------------------+----------
+             25 | Transporte Santa Rosa |       14
+(1 row)
+
+=== S8 ===
+ id_sala |        sala        |   ventas    
+---------+--------------------+-------------
+      18 | Güemes 547         | 31757410.00
+      34 | Moreno 149         | 30334365.00
+      27 | Las Heras 1959     | 30003280.00
+      60 | Independencia 2286 | 28717145.00
+      39 | Rivadavia 2654     | 28360290.00
+      11 | Ituzaingó 824      | 28045105.00
+       6 | Independencia 1101 | 27636360.00
+      47 | Libertador 2137    | 26571345.00
+      31 | Las Heras 857      | 26463830.00
+       5 | Pellegrini 2991    | 26458205.00
+       8 | Moreno 609         | 26450795.00
+      13 | Sarmiento 2748     | 26159460.00
+      49 | Ituzaingó 1131     | 26004830.00
+      43 | Pellegrini 332     | 25948815.00
+       3 | Urquiza 2944       | 25633710.00
+(15 rows)
+
+=== S9 ===
+ cod_vino |          nombre          | tipo  | anada | volumen_ml | graduacion |  precio  | cuit_bodega |    bodega     |           cepas            |                     maridajes                     | stock_deposito | stock_salas | stock_total 
+----------+--------------------------+-------+-------+------------+------------+----------+-------------+---------------+----------------------------+---------------------------------------------------+----------------+-------------+-------------
+      123 | Roble Pinot Noir de Cuyo | tinto |  2016 |       1500 |      13.89 | 19050.00 | 30161033967 | Bodega Cuarzo | Pinot Noir 90%, Merlot 10% | Carnes rojas, Pastas con salsa roja, Quesos duros |            809 |          67 |         876
+(1 row)
+
+--- plan S9
+                                                   QUERY PLAN                                                   
+----------------------------------------------------------------------------------------------------------------
+ Nested Loop (actual rows=1 loops=1)
+   Join Filter: ((b.cuit)::bpchar = (v.cuit_bodega)::bpchar)
+   Rows Removed by Join Filter: 25
+   Buffers: shared hit=26
+   ->  Nested Loop Left Join (actual rows=1 loops=1)
+         Buffers: shared hit=17
+         ->  Nested Loop Left Join (actual rows=1 loops=1)
+               Buffers: shared hit=10
+               ->  Nested Loop (actual rows=1 loops=1)
+                     Buffers: shared hit=7
+                     ->  Index Scan using vino_pkey on vino v (actual rows=1 loops=1)
+                           Index Cond: (cod_vino = 123)
+                           Buffers: shared hit=3
+                     ->  Index Only Scan using vino_pkey on vino v_1 (actual rows=1 loops=1)
+                           Index Cond: (cod_vino = 123)
+                           Heap Fetches: 1
+                           Buffers: shared hit=4
+               ->  Index Scan using stock_deposito_pkey on stock_deposito d (actual rows=1 loops=1)
+                     Index Cond: (cod_vino = 123)
+                     Buffers: shared hit=3
+         ->  GroupAggregate (actual rows=1 loops=1)
+               Buffers: shared hit=7
+               ->  Bitmap Heap Scan on stock_sala (actual rows=5 loops=1)
+                     Recheck Cond: (cod_vino = 123)
+                     Heap Blocks: exact=5
+                     Buffers: shared hit=7
+                     ->  Bitmap Index Scan on idx_stock_sala_vino (actual rows=5 loops=1)
+                           Index Cond: (cod_vino = 123)
+                           Buffers: shared hit=2
+   ->  Seq Scan on bodega b (actual rows=26 loops=1)
+         Buffers: shared hit=1
+   SubPlan 1
+     ->  Aggregate (actual rows=1 loops=1)
+           Buffers: shared hit=4
+           ->  Sort (actual rows=2 loops=1)
+                 Sort Key: co.porcentaje DESC, c.nombre
+                 Sort Method: quicksort  Memory: 25kB
+                 Buffers: shared hit=4
+                 ->  Hash Join (actual rows=2 loops=1)
+                       Hash Cond: (co.id_cepa = c.id_cepa)
+                       Buffers: shared hit=4
+                       ->  Bitmap Heap Scan on composicion co (actual rows=2 loops=1)
+                             Recheck Cond: (cod_vino = v.cod_vino)
+                             Heap Blocks: exact=1
+                             Buffers: shared hit=3
+                             ->  Bitmap Index Scan on composicion_pkey (actual rows=2 loops=1)
+                                   Index Cond: (cod_vino = v.cod_vino)
+                                   Buffers: shared hit=2
+                       ->  Hash (actual rows=12 loops=1)
+                             Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                             Buffers: shared hit=1
+                             ->  Seq Scan on cepa c (actual rows=12 loops=1)
+                                   Buffers: shared hit=1
+   SubPlan 2
+     ->  Aggregate (actual rows=1 loops=1)
+           Buffers: shared hit=4
+           ->  Sort (actual rows=3 loops=1)
+                 Sort Key: m.nombre
+                 Sort Method: quicksort  Memory: 25kB
+                 Buffers: shared hit=4
+                 ->  Hash Join (actual rows=3 loops=1)
+                       Hash Cond: (vm.id_maridaje = m.id_maridaje)
+                       Buffers: shared hit=4
+                       ->  Index Only Scan using vino_maridaje_pkey on vino_maridaje vm (actual rows=3 loops=1)
+                             Index Cond: (cod_vino = v.cod_vino)
+                             Heap Fetches: 0
+                             Buffers: shared hit=3
+                       ->  Hash (actual rows=8 loops=1)
+                             Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                             Buffers: shared hit=1
+                             ->  Seq Scan on maridaje m (actual rows=8 loops=1)
+                                   Buffers: shared hit=1
+ Planning:
+   Buffers: shared hit=16
+ Planning Time: 0.406 ms
+ Execution Time: 0.118 ms
+(76 rows)
+
+=== S10 ===
+ id_finca | nro_parcela | campania | kg_por_ha | promedio_finca 
+----------+-------------+----------+-----------+----------------
+        4 |           6 |     2024 |    5197.1 |         9742.7
+       42 |           3 |     2026 |    5286.1 |         9777.9
+       61 |           6 |     2022 |    5055.0 |         9535.8
+        7 |           7 |     2025 |    5841.4 |        10197.8
+       78 |           4 |     2024 |    5006.6 |         9349.2
+       29 |           2 |     2024 |    5359.8 |         9692.1
+       57 |           3 |     2024 |    5322.0 |         9600.7
+        3 |           5 |     2024 |    5267.8 |         9543.0
+       59 |           2 |     2022 |    5006.0 |         9216.2
+       60 |           3 |     2025 |    5470.0 |         9654.0
+       44 |           4 |     2024 |    5217.4 |         9398.8
+       75 |           1 |     2026 |    5269.3 |         9388.8
+       46 |           6 |     2026 |    5189.2 |         9289.9
+       28 |           4 |     2025 |    5382.1 |         9459.1
+       52 |           6 |     2024 |    5056.8 |         9067.5
+(15 rows)
+
+--- plan S10 (resumen: cantidad de parcelas-campania por debajo del promedio de su finca)
+ parcelas_campania_debajo_del_promedio | total_lotes 
+---------------------------------------+-------------
+                                  1495 |        3000
+(1 row)
+
+                                      QUERY PLAN                                      
+--------------------------------------------------------------------------------------
+ CTE Scan on rend r (actual rows=1495 loops=1)
+   Filter: (kg_por_ha < (SubPlan 2))
+   Rows Removed by Filter: 1505
+   Buffers: shared hit=32
+   CTE rend
+     ->  Hash Join (actual rows=3000 loops=1)
+           Hash Cond: ((l.id_finca = p.id_finca) AND (l.nro_parcela = p.nro_parcela))
+           Buffers: shared hit=32
+           ->  Seq Scan on lote l (actual rows=3000 loops=1)
+                 Buffers: shared hit=28
+           ->  Hash (actual rows=600 loops=1)
+                 Buckets: 1024  Batches: 1  Memory Usage: 37kB
+                 Buffers: shared hit=4
+                 ->  Seq Scan on parcela p (actual rows=600 loops=1)
+                       Buffers: shared hit=4
+   SubPlan 2
+     ->  Aggregate (actual rows=1 loops=3000)
+           Buffers: shared hit=27
+           ->  CTE Scan on rend r2 (actual rows=8 loops=3000)
+                 Filter: ((id_finca = r.id_finca) AND (campania = r.campania))
+                 Rows Removed by Filter: 2992
+                 Buffers: shared hit=27
+ Planning Time: 0.252 ms
+ Execution Time: 350.109 ms
+(24 rows)
+
+=== S11a: ranking de vinos por sala (top 3 de las salas 1 a 3) ===
+ id_sala | cod_vino | botellas | puesto 
+---------+----------+----------+--------
+       1 |      120 |      511 |      1
+       1 |      530 |      503 |      2
+       1 |      709 |      489 |      3
+       2 |      216 |      484 |      1
+       2 |      277 |      469 |      2
+       2 |       52 |      454 |      3
+       3 |       29 |      470 |      1
+       3 |      352 |      454 |      2
+       3 |      541 |      442 |      3
+(9 rows)
+
+=== S11b: ventas acumuladas por mes de la sala 1 (ultimos 8 meses) ===
+ id_sala |    mes     | total_vendido |  acumulado   
+---------+------------+---------------+--------------
+       1 | 2026-11-01 |    2221625.00 | 565211555.00
+       1 | 2026-10-01 |    6105320.00 | 562989930.00
+       1 | 2026-09-01 |    6628455.00 | 556884610.00
+       1 | 2026-08-01 |    7207745.00 | 550256155.00
+       1 | 2026-07-01 |    7924610.00 | 543048410.00
+       1 | 2026-06-01 |   11596160.00 | 535123800.00
+       1 | 2026-05-01 |    7331915.00 | 523527640.00
+       1 | 2026-04-01 |    8129265.00 | 516195725.00
+(8 rows)
+
+--- plan S11a
+                                                         QUERY PLAN                                                         
+----------------------------------------------------------------------------------------------------------------------------
+ WindowAgg (actual rows=9 loops=1)
+   Run Condition: (rank() OVER (?) <= 3)
+   Buffers: shared hit=5457
+   ->  Sort (actual rows=211 loops=1)
+         Sort Key: c.id_sala, (sum(r.cantidad)) DESC
+         Sort Method: quicksort  Memory: 33kB
+         Buffers: shared hit=5457
+         ->  Finalize HashAggregate (actual rows=211 loops=1)
+               Group Key: c.id_sala, r.cod_vino
+               Batches: 1  Memory Usage: 801kB
+               Buffers: shared hit=5457
+               ->  Gather (actual rows=571 loops=1)
+                     Workers Planned: 2
+                     Workers Launched: 2
+                     Buffers: shared hit=5457
+                     ->  Partial HashAggregate (actual rows=190 loops=3)
+                           Group Key: c.id_sala, r.cod_vino
+                           Batches: 1  Memory Usage: 417kB
+                           Buffers: shared hit=5457
+                           Worker 0:  Batches: 1  Memory Usage: 417kB
+                           Worker 1:  Batches: 1  Memory Usage: 417kB
+                           ->  Parallel Hash Join (actual rows=9016 loops=3)
+                                 Hash Cond: (r.nro_comprobante = c.nro_comprobante)
+                                 Buffers: shared hit=5457
+                                 ->  Parallel Seq Scan on renglon_comprobante r (actual rows=187432 loops=3)
+                                       Buffers: shared hit=4160
+                                 ->  Parallel Hash (actual rows=2421 loops=3)
+                                       Buckets: 8192  Batches: 1  Memory Usage: 352kB
+                                       Buffers: shared hit=1291
+                                       ->  Parallel Bitmap Heap Scan on comprobante c (actual rows=7262 loops=1)
+                                             Recheck Cond: ((id_sala >= 1) AND (id_sala <= 3))
+                                             Heap Blocks: exact=1268
+                                             Buffers: shared hit=1291
+                                             ->  Bitmap Index Scan on idx_comprobante_sala_fecha (actual rows=7368 loops=1)
+                                                   Index Cond: ((id_sala >= 1) AND (id_sala <= 3))
+                                                   Buffers: shared hit=23
+ Planning:
+   Buffers: shared hit=20
+ Planning Time: 0.280 ms
+ Execution Time: 49.426 ms
+(40 rows)
+
+=== S12a: clientes que compraron todos los vinos de la bodega ===
+ id_cliente | nombre_razon_social 
+------------+---------------------
+(0 rows)
+
+=== S12b: clientes que nunca compraron un vino tinto (cantidad por tipo de cliente) ===
+ tipo_cliente | clientes 
+--------------+----------
+ distribuidor |       38
+ exportador   |       17
+ socio        |      359
+(3 rows)
+
+--- plan S12b
+                                    QUERY PLAN                                    
+----------------------------------------------------------------------------------
+ Hash Right Anti Join (actual rows=414 loops=1)
+   Hash Cond: (c.id_cliente = k.id_cliente)
+   Buffers: shared hit=5715
+   ->  Hash Join (actual rows=351014 loops=1)
+         Hash Cond: (r.nro_comprobante = c.nro_comprobante)
+         Buffers: shared hit=5459
+         ->  Hash Join (actual rows=351014 loops=1)
+               Hash Cond: (r.cod_vino = v.cod_vino)
+               Buffers: shared hit=4171
+               ->  Seq Scan on renglon_comprobante r (actual rows=562295 loops=1)
+                     Buffers: shared hit=4160
+               ->  Hash (actual rows=492 loops=1)
+                     Buckets: 1024  Batches: 1  Memory Usage: 26kB
+                     Buffers: shared hit=11
+                     ->  Seq Scan on vino v (actual rows=492 loops=1)
+                           Filter: ((tipo)::text = 'tinto'::text)
+                           Rows Removed by Filter: 308
+                           Buffers: shared hit=11
+         ->  Hash (actual rows=150720 loops=1)
+               Buckets: 262144  Batches: 1  Memory Usage: 7936kB
+               Buffers: shared hit=1288
+               ->  Seq Scan on comprobante c (actual rows=150720 loops=1)
+                     Buffers: shared hit=1288
+   ->  Hash (actual rows=20000 loops=1)
+         Buckets: 32768  Batches: 1  Memory Usage: 960kB
+         Buffers: shared hit=256
+         ->  Seq Scan on cliente k (actual rows=20000 loops=1)
+               Buffers: shared hit=256
+ Planning:
+   Buffers: shared hit=56
+ Planning Time: 0.470 ms
+ Execution Time: 147.054 ms
+(32 rows)
+
+=== S12a, prueba de la division (BEGIN ... ROLLBACK) ===
+BEGIN
+INSERT 0 1
+INSERT 0 2
+INSERT 0 2
+INSERT 0 2
+INSERT 0 2
+INSERT 0 2
+INSERT 0 1
+ id_cliente 
+------------
+          1
+(1 row)
+
+ROLLBACK

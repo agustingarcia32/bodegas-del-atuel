@@ -1,0 +1,23 @@
+GroupAggregate  (cost=89.32..89.41 rows=3 width=14) (actual time=0.134..0.135 rows=1 loops=1)
+  Group Key: k.tipo_cliente
+  Buffers: shared hit=37
+  ->  Sort  (cost=89.32..89.34 rows=7 width=10) (actual time=0.127..0.128 rows=7 loops=1)
+        Sort Key: k.tipo_cliente, c.id_cliente
+        Sort Method: quicksort  Memory: 25kB
+        Buffers: shared hit=37
+        ->  Nested Loop  (cost=4.78..89.22 rows=7 width=10) (actual time=0.035..0.098 rows=7 loops=1)
+              Buffers: shared hit=31
+              ->  Bitmap Heap Scan on comprobante c  (cost=4.50..31.09 rows=7 width=4) (actual time=0.024..0.051 rows=7 loops=1)
+                    Recheck Cond: ((id_sala = 7) AND (fecha >= (CURRENT_DATE - 7)))
+                    Heap Blocks: exact=7
+                    Buffers: shared hit=10
+                    ->  Bitmap Index Scan on idx_comprobante_sala_fecha  (cost=0.00..4.50 rows=7 width=0) (actual time=0.015..0.016 rows=7 loops=1)
+                          Index Cond: ((id_sala = 7) AND (fecha >= (CURRENT_DATE - 7)))
+                          Buffers: shared hit=3
+              ->  Index Scan using cliente_pkey on cliente k  (cost=0.29..8.30 rows=1 width=10) (actual time=0.006..0.006 rows=1 loops=7)
+                    Index Cond: (id_cliente = c.id_cliente)
+                    Buffers: shared hit=21
+Planning:
+  Buffers: shared hit=274
+Planning Time: 0.751 ms
+Execution Time: 0.234 ms
