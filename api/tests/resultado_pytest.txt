@@ -1,0 +1,26 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.18, pytest-9.1.1, pluggy-1.6.0 -- /usr/local/bin/python3
+cachedir: .pytest_cache
+rootdir: /home/claude/db/api
+plugins: platformdirs-4.13.5, anyio-4.15.1
+collecting ... collected 17 items
+
+tests/test_api.py::test_salud_usa_el_rol_de_la_api PASSED                [  5%]
+tests/test_api.py::test_catalogo_paginado_y_filtros PASSED               [ 11%]
+tests/test_api.py::test_detalle_vino_y_404 PASSED                        [ 17%]
+tests/test_api.py::test_catalogos PASSED                                 [ 23%]
+tests/test_api.py::test_crud_de_vino PASSED                              [ 29%]
+tests/test_api.py::test_crud_de_cliente_el_descuento_lo_pone_la_base PASSED [ 35%]
+tests/test_api.py::test_regla_porcentajes_distintos_de_100_da_409_y_no_deja_nada PASSED [ 41%]
+tests/test_api.py::test_precio_negativo_da_422 PASSED                    [ 47%]
+tests/test_api.py::test_venta_sin_stock_da_409_sin_datos_a_medias PASSED [ 52%]
+tests/test_api.py::test_venta_correcta_calcula_importes_y_descuenta_stock PASSED [ 58%]
+tests/test_api.py::test_borrar_vino_con_movimientos_da_409 PASSED        [ 64%]
+tests/test_api.py::test_circuito_transferencia_y_transicion_invalida PASSED [ 70%]
+tests/test_api.py::test_circuito_ingreso_suma_al_deposito PASSED         [ 76%]
+tests/test_api.py::test_filtros_invalidos_dan_400 PASSED                 [ 82%]
+tests/test_api.py::test_inyeccion_sql_no_funciona PASSED                 [ 88%]
+tests/test_api.py::test_reportes PASSED                                  [ 94%]
+tests/test_api.py::test_openapi_coincide_con_las_rutas PASSED            [100%]
+
+============================== 17 passed in 0.17s ==============================

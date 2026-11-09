@@ -1,0 +1,62 @@
+# Levanta todo:   docker compose up -d --build db api front
+# Cargar datos:   docker compose --profile carga run --rm carga
+# Requiere un archivo .env (copiar .env.example). Front: http://localhost:8080  API: http://localhost:8000/docs
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: bodegas
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?falta POSTGRES_PASSWORD en .env}
+      APP_RW_PASSWORD: ${APP_RW_PASSWORD:?falta APP_RW_PASSWORD en .env}
+      APP_RO_PASSWORD: ${APP_RO_PASSWORD:?falta APP_RO_PASSWORD en .env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      # el orden alfabetico es el orden de ejecucion; los roles (007) van al final, cuando ya existen todas las vistas
+      - ./migrations/001_esquema.sql:/docker-entrypoint-initdb.d/01_esquema.sql:ro
+      - ./migrations/002_constraints.sql:/docker-entrypoint-initdb.d/02_constraints.sql:ro
+      - ./migrations/003_funciones.sql:/docker-entrypoint-initdb.d/03_funciones.sql:ro
+      - ./migrations/004_procedimientos.sql:/docker-entrypoint-initdb.d/04_procedimientos.sql:ro
+      - ./migrations/005_triggers.sql:/docker-entrypoint-initdb.d/05_triggers.sql:ro
+      - ./migrations/006_vistas.sql:/docker-entrypoint-initdb.d/06_vistas.sql:ro
+      - ./migrations/008_indices.sql:/docker-entrypoint-initdb.d/08_indices.sql:ro
+      - ./migrations/009_vista_ficha_vino.sql:/docker-entrypoint-initdb.d/09_vista_ficha_vino.sql:ro
+      - ./migrations/007_roles.sql:/docker-entrypoint-initdb.d/10_roles.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d bodegas"]
+      interval: 5s
+      retries: 20
+    ports:
+      - "5432:5432"   # quitar esta linea si no hace falta entrar desde afuera
+
+  api:
+    build: ./api
+    environment:
+      DATABASE_URL: postgresql://app_rw:${APP_RW_PASSWORD}@db:5432/bodegas
+      CORS_ORIGIN: http://localhost:8080
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+
+  front:
+    image: nginx:alpine
+    volumes:
+      - ./front:/usr/share/nginx/html:ro
+    ports:
+      - "8080:80"
+
+  carga:                      # solo se ejecuta a pedido (profile): genera y carga ~800 mil filas, con el propietario
+    profiles: ["carga"]
+    build: ./seed
+    environment:
+      PGHOST: db
+      PGUSER: postgres
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      PGDATABASE: bodegas
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:

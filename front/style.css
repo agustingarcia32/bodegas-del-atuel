@@ -1,0 +1,27 @@
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,sans-serif;background:#faf7f5;color:#2a2024}
+header{background:#6b1d3a;color:#fff;padding:.6rem 1rem;display:flex;flex-wrap:wrap;gap:1rem;align-items:center}
+header h1{font-size:1.2rem;margin:0}
+nav a{color:#f3dfe6;margin-right:1rem;text-decoration:none}
+nav a:hover,nav a.activo{color:#fff;text-decoration:underline}
+main{max-width:1000px;margin:1rem auto;padding:0 1rem}
+#aviso{position:sticky;top:0;z-index:5}
+.msg{padding:.6rem 1rem;margin:.5rem auto;max-width:1000px;border-radius:4px}
+.msg.error{background:#fde4e4;border:1px solid #c33;color:#7a1010}
+.msg.ok{background:#e3f5e6;border:1px solid #3a8a4a;color:#14501f}
+table{width:100%;border-collapse:collapse;background:#fff}
+th,td{padding:.4rem .6rem;border-bottom:1px solid #e5dde0;text-align:left}
+th{background:#efe4e8}
+td.num,th.num{text-align:right}
+.filtros,.fila{display:flex;flex-wrap:wrap;gap:.5rem;margin:.6rem 0;align-items:end}
+label{display:flex;flex-direction:column;font-size:.85rem;gap:.15rem}
+input,select,button{font:inherit;padding:.35rem .5rem}
+button{background:#6b1d3a;color:#fff;border:0;border-radius:4px;cursor:pointer}
+button.sec{background:#8a7a80}
+button:disabled{opacity:.5;cursor:wait}
+.paginas{display:flex;gap:.5rem;align-items:center;margin:.6rem 0}
+.tarjeta{background:#fff;padding:1rem;border:1px solid #e5dde0;border-radius:6px;margin:.8rem 0}
+.estado{padding:.1rem .5rem;border-radius:10px;background:#eee;font-size:.85rem}
+.vacio{color:#7a6a70;padding:1rem}
+a{color:#6b1d3a}
+@media(max-width:600px){th,td{padding:.3rem}}
