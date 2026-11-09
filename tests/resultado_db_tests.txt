@@ -1,0 +1,234 @@
+Output format is unaligned.
+CREATE TABLE
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+INSERT 0 2
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 2
+INSERT 0 1
+INSERT 0 1
+INSERT 0 2
+INSERT 0 3
+INSERT 0 3
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+=== RN-01 precio unico y mayor que cero ===
+
+
+
+=== RN-02 sala en una sola localidad; localidad con un solo encargado ===
+
+
+
+
+=== RN-03 empleado en una sola sala ===
+
+
+
+=== RN-04 parcela con una cepa; una cosecha por parcela y campania ===
+
+
+
+
+=== RN-05 los porcentajes de corte suman 100 (trigger diferido) ===
+BEGIN
+INSERT 0 1
+INSERT 0 1
+
+ROLLBACK
+BEGIN
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+
+COMMIT
+
+=== RN-06 descuento segun tipo de cliente ===
+
+
+
+
+
+
+=== RN-07 permisos del exportador ===
+
+
+
+
+=== RN-08 el total del comprobante lo calcula la base ===
+BEGIN
+INSERT 0 1
+INSERT 0 1
+INSERT 0 2
+COMMIT
+
+
+
+
+=== RN-09 no se vende mas de lo que hay; stock nunca negativo ===
+
+
+
+
+
+
+
+=== RN-10 ingresos: en_confeccion -> terminado -> procesado ===
+INSERT 0 1
+INSERT 0 2
+
+
+
+
+
+
+
+
+
+
+
+
+=== RN-11 transferencias: estados y fecha de confeccion ===
+INSERT 0 1
+INSERT 0 1
+
+
+
+
+
+
+
+
+
+INSERT 0 1
+INSERT 0 1
+UPDATE 1
+
+=== RN-12 documentos que no estan en confeccion no admiten cambios de renglones ===
+
+
+
+
+
+INSERT 0 1
+
+
+=== RN-13 auditoria de cambios de precio ===
+
+
+
+
+
+
+=== RN-14 no se borra lo que tiene movimientos ===
+
+
+
+
+
+=== RN-15 cantidades, superficies, kilos y precios positivos; graduacion 5 a 20 ===
+
+
+
+
+
+
+
+
+
+
+
+=================== RESULTADO ===================
+PASA   RN-01 precio 0 rechazado  [23514]
+PASA   RN-01 precio negativo rechazado  [23514]
+PASA   RN-01 el precio es un atributo de vino: no existe precio por sala
+PASA   RN-02 sala con localidad inexistente (FK)  [23503]
+PASA   RN-02 sala sin localidad (NOT NULL)  [23502]
+PASA   RN-02 localidad repetida (nombre, provincia)  [23505]
+PASA   RN-02 el encargado vive solo en localidad (3FN)
+PASA   RN-03 empleado con sala valida
+PASA   RN-03 empleado sin sala (NOT NULL)  [23502]
+PASA   RN-03 empleado con sala inexistente (FK)  [23503]
+PASA   RN-04 parcela sin cepa (NOT NULL)  [23502]
+PASA   RN-04 primera cosecha de la parcela en 2025
+PASA   RN-04 segunda cosecha de la misma parcela y campania  [23505]
+PASA   RN-04 la misma parcela en otra campania si se puede
+PASA   RN-05 70 + 30 suma 100 (carga en etapas dentro de la transaccion)
+PASA   RN-05 un porcentaje de 101 no entra (CHECK de rango)  [23514]
+PASA   RN-06 socio 10 %, distribuidor 20 %, exportador 30 %
+PASA   RN-06 fn_descuento_cliente devuelve 10/20/30
+PASA   RN-06 un tipo desconocido no tiene descuento  [22023]
+PASA   RN-06 descuento fuera de 0..100 (CHECK de rango)  [23514]
+PASA   RN-06 cliente cargado sin descuento (NULL)
+PASA   RN-06 ...el trigger le puso el del tipo (10)
+PASA   RN-07 un exportador con dos permisos
+PASA   RN-07 vencimiento igual a la emision  [23514]
+PASA   RN-07 vencimiento anterior a la emision  [23514]
+PASA   RN-07 un socio no puede tener permisos (FK a exportador)  [23503]
+PASA   RN-08 subtotal 2500, descuento 250, total 2250
+PASA   RN-08 el total coincide con la suma de los renglones
+PASA   RN-08 un total cargado a mano incoherente se rechaza (CHECK)  [23514]
+PASA   RN-08 fn_total_comprobante da lo mismo
+PASA   RN-09 la venta descuento el stock (10 - 2 = 8)
+PASA   RN-09 comprobante nuevo
+PASA   RN-09 vender 9 con 8 en stock  [P0001]
+PASA   RN-09 vender un vino que la sala no tiene  [P0001]
+PASA   RN-09 vender exactamente lo que hay (8)
+PASA   RN-09 el stock quedo en 0, no negativo
+PASA   RN-09 CHECK: stock negativo directo  [23514]
+PASA   RN-10 el ingreso nace en_confeccion y no toco el deposito
+PASA   RN-10 en_confeccion -> procesado (saltea terminado)  [P0001]
+PASA   RN-10 no se puede procesar un ingreso que no esta terminado  [P0001]
+PASA   RN-10 en_confeccion -> terminado
+PASA   RN-10 terminado -> procesado a mano (sin el procedimiento)  [P0001]
+PASA   RN-10 terminado -> en_confeccion (retroceso)  [P0001]
+PASA   RN-10 todavia no impacto en el deposito
+PASA   RN-10 sp_procesar_ingreso
+PASA   RN-10 deposito: vino A 50, vino B 30 y el ingreso quedo procesado
+PASA   RN-10 procesado no se procesa dos veces  [P0001]
+PASA   RN-10 procesado -> terminado (retroceso)  [P0001]
+PASA   RN-10 estado inexistente (ENUM)  [22P02]
+PASA   RN-11 la fecha de confeccion es la de hoy
+PASA   RN-11 insertar con otra fecha: se pisa por la de hoy
+PASA   RN-11 ...quedo con la fecha de hoy
+PASA   RN-11 la fecha de confeccion no se modifica  [P0001]
+PASA   RN-11 en_confeccion -> procesado  [P0001]
+PASA   RN-11 en_confeccion -> terminado
+PASA   RN-11 sp_procesar_transferencia
+PASA   RN-11 deposito 50 - 20 = 30 y sala 0 + 20 = 20
+PASA   RN-11 procesado -> terminado (retroceso)  [P0001]
+PASA   RN-11 transferencia mayor al stock del deposito (hay 30, pide 999)  [P0001]
+PASA   RN-12 agregar renglon a un ingreso procesado  [P0001]
+PASA   RN-12 modificar renglon de un ingreso procesado  [P0001]
+PASA   RN-12 quitar renglon de un ingreso procesado  [P0001]
+PASA   RN-12 modificar renglon de una transferencia terminada  [P0001]
+PASA   RN-12 quitar renglon de una transferencia terminada  [P0001]
+PASA   RN-12 en confeccion si admite renglones
+PASA   RN-12 borrar un documento en confeccion arrastra sus renglones
+PASA   RN-13 cambiar el precio del vino 1
+PASA   RN-13 quedo una fila con precio anterior 1000, nuevo 1200 y el usuario
+PASA   RN-13 actualizar con el mismo precio
+PASA   RN-13 cambiar solo el nombre
+PASA   RN-13 ...y no genero auditoria (sigue 1 fila)
+PASA   RN-13 no se registra "cambio" a un precio igual (CHECK de la auditoria)  [23514]
+PASA   RN-14 borrar un vino con ventas  [23503]
+PASA   RN-14 borrar una bodega con vinos  [23503]
+PASA   RN-14 borrar un transportista con ingresos  [23503]
+PASA   RN-14 un vino sin movimientos si se borra
+PASA   RN-14 ...se borra
+PASA   RN-15 graduacion 4.9  [23514]
+PASA   RN-15 graduacion 20.1  [23514]
+PASA   RN-15 graduacion 5 y 20 son validas
+PASA   RN-15 superficie de finca 0  [23514]
+PASA   RN-15 superficie de parcela negativa  [23514]
+PASA   RN-15 kilos 0  [23514]
+PASA   RN-15 salario 0  [23514]
+PASA   RN-15 cantidad de renglon de ingreso 0  [23514]
+PASA   RN-15 cantidad de venta 0  [23514]
+PASA   RN-15 stock negativo  [23514]
+--- 87 pasan, 0 fallan, de 87

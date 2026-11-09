@@ -1,0 +1,12 @@
+### Demo 1: dos clientes compran la ULTIMA botella (stock = 1) al mismo tiempo
+  sesion B: ERROR:  Stock insuficiente del vino 1 en la sala 1 (hay 0, se piden 1) (RN-09)
+  sesion B: CONTEXT:  PL/pgSQL function trg_renglon_venta_antes() line 29 at RAISE
+  stock final: 0  (nunca negativo)
+  ventas del vino: 1  (solo una se concreta)
+
+### Demo 2: dos sesiones procesan el MISMO ingreso al mismo tiempo
+  sesion B: ERROR:  El ingreso 1 no está terminado (estado actual: procesado). Solo un ingreso terminado impacta en el depósito (RN-10)
+  sesion B: CONTEXT:  PL/pgSQL function sp_procesar_ingreso(integer) line 17 at RAISE
+  sesion B: terminada
+  sesion A: terminada
+  deposito antes: 0, despues: 100  (+100 una sola vez)

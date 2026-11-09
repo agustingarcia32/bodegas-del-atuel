@@ -1,0 +1,7 @@
+.env
+__pycache__/
+*.pyc
+seed/salida/
+.pytest_cache/
+.venv/
+seed/dump_completo.sql.gz
